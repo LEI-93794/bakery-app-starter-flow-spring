@@ -14,6 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assign Reviewers
-        uses: actions/request-review@v1
+        uses: necojackarc/assign-pr-reviewers@v1
         with:
           reviewers: LEI-93794
