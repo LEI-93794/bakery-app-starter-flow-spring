@@ -27,6 +27,26 @@ import org.hibernate.annotations.BatchSize;
 
 import com.vaadin.starter.bakery.backend.data.OrderState;
 
+/**
+ * Entity representing a bakery order.
+ * 
+ * <p>This entity manages order information including due dates, customers, items, 
+ * pickup locations, and order history. The class implements {@link OrderSummary} 
+ * to provide a summarized view of order data for performance optimization.</p>
+ * 
+ * <p>The entity uses named entity graphs for performance optimization:
+ * <ul>
+ *   <li>{@code ENTITY_GRAPTH_BRIEF} - Loads basic order info with customer and location</li>
+ *   <li>{@code ENTITY_GRAPTH_FULL} - Loads complete order details including items and history</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Note: The entity is mapped to "OrderInfo" table since "Order" is a reserved SQL keyword.</p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
+ */
 @Entity(name = "OrderInfo") // "Order" is a reserved word
 @NamedEntityGraphs({@NamedEntityGraph(name = Order.ENTITY_GRAPTH_BRIEF, attributeNodes = {
 		@NamedAttributeNode("customer"),
@@ -40,12 +60,27 @@ import com.vaadin.starter.bakery.backend.data.OrderState;
 @Table(indexes = @Index(columnList = "dueDate"))
 public class Order extends AbstractEntity implements OrderSummary {
 
+	/**
+	 * Named entity graph for brief order loading.
+	 * Includes customer and pickup location information.
+	 */
 	public static final String ENTITY_GRAPTH_BRIEF = "Order.brief";
+	
+	/**
+	 * Named entity graph for full order loading.
+	 * Includes all order details including items and history.
+	 */
 	public static final String ENTITY_GRAPTH_FULL = "Order.full";
 
+	/**
+	 * The date when the order is due for delivery or pickup.
+	 */
 	@NotNull(message = "{bakery.due.date.required}")
 	private LocalDate dueDate;
 
+	/**
+	 * The time when the order is due for delivery or pickup.
+	 */
 	@NotNull(message = "{bakery.due.time.required}")
 	private LocalTime dueTime;
 

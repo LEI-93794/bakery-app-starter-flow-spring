@@ -47,6 +47,43 @@ import com.vaadin.starter.bakery.ui.utils.FormattingUtils;
 import com.vaadin.starter.bakery.ui.views.storefront.OrderCard;
 import com.vaadin.starter.bakery.ui.views.storefront.beans.OrdersCountDataWithChart;
 
+/**
+ * Dashboard view component that displays analytics and business metrics for the bakery application.
+ * 
+ * <p>This view provides a comprehensive overview of the bakery's business performance using
+ * various charts and data visualizations. It includes delivery statistics, order analytics,
+ * monthly performance indicators, and recent order tracking.</p>
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Interactive charts for order trends and delivery statistics</li>
+ *   <li>Real-time performance metrics and KPI indicators</li>
+ *   <li>Monthly and yearly analytics with visual representations</li>
+ *   <li>Recent orders grid with detailed order information</li>
+ *   <li>Responsive layout that adapts to different screen sizes</li>
+ *   <li>Integration with Vaadin Charts for rich data visualization</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Chart types included:
+ * <ul>
+ *   <li>Solid gauge charts for delivery performance metrics</li>
+ *   <li>Pie charts for order distribution analysis</li>
+ *   <li>Line charts for monthly trend analysis</li>
+ *   <li>Data grids for detailed order listings</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Security: This view is accessible to all authenticated users ({@code @PermitAll}).
+ * The dashboard provides read-only analytics data without sensitive information exposure.</p>
+ * 
+ * <p>Implementation: Uses {@link LitTemplate} for client-side rendering performance and
+ * integrates with the {@link OrderService} for real-time business data retrieval.</p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
+ */
 @Tag("dashboard-view")
 @JsModule("./src/views/dashboard/dashboard-view.js")
 @Route(value = BakeryConst.PAGE_DASHBOARD, layout = MainView.class)
@@ -54,41 +91,86 @@ import com.vaadin.starter.bakery.ui.views.storefront.beans.OrdersCountDataWithCh
 @PermitAll
 public class DashboardView extends LitTemplate {
 
+	/**
+	 * Month labels used for chart axes and data presentation.
+	 */
 	private static final String[] MONTH_LABELS = new String[] {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
 			"Aug", "Sep", "Oct", "Nov", "Dec"};
 
+	/**
+	 * Service for retrieving order and analytics data.
+	 */
 	private final OrderService orderService;
 
+	/**
+	 * Label component displaying today's order count.
+	 */
 	@Id("todayCount")
 	private DashboardCounterLabel todayCount;
 
+	/**
+	 * Label component displaying count of orders with unavailable items.
+	 */
 	@Id("notAvailableCount")
 	private DashboardCounterLabel notAvailableCount;
 
+	/**
+	 * Label component displaying count of new orders.
+	 */
 	@Id("newCount")
 	private DashboardCounterLabel newCount;
 
+	/**
+	 * Label component displaying tomorrow's order count.
+	 */
 	@Id("tomorrowCount")
 	private DashboardCounterLabel tomorrowCount;
 
+	/**
+	 * Chart component displaying delivery statistics for the current month.
+	 */
 	@Id("deliveriesThisMonth")
 	private Chart deliveriesThisMonthChart;
 
+	/**
+	 * Chart component displaying delivery statistics for the current year.
+	 */
 	@Id("deliveriesThisYear")
 	private Chart deliveriesThisYearChart;
 
+	/**
+	 * Chart component displaying yearly sales performance graph.
+	 */
 	@Id("yearlySalesGraph")
 	private Chart yearlySalesGraph;
 
+	/**
+	 * Grid component displaying recent orders with detailed information.
+	 */
 	@Id("ordersGrid")
 	private Grid<Order> grid;
 
+	/**
+	 * Chart component displaying monthly product delivery distribution.
+	 */
 	@Id("monthlyProductSplit")
 	private Chart monthlyProductSplit;
 
+	/**
+	 * Chart component displaying today's order count visualization.
+	 */
 	@Id("todayCountChart")
 	private Chart todayCountChart;
 
+	/**
+	 * Constructs the dashboard view with analytics data and chart configurations.
+	 * 
+	 * <p>Initializes all dashboard components, configures the orders grid with
+	 * interactive order cards, and populates charts with current business data.</p>
+	 * 
+	 * @param orderService the service for retrieving order and analytics data
+	 * @param orderDataProvider the data provider for the orders grid
+	 */
 	@Autowired
 	public DashboardView(OrderService orderService, OrdersGridDataProvider orderDataProvider) {
 		this.orderService = orderService;
@@ -111,6 +193,23 @@ public class DashboardView extends LitTemplate {
 		measurePageLoadPerformance();
 	}
 
+	/**
+	 * Measures page load performance by tracking chart loading completion.
+	 * 
+	 * <p>This method tracks when all dashboard charts have finished loading
+	 * and triggers a JavaScript callback for performance measurement.
+	 * Used for monitoring and optimizing dashboard rendering performance.</p>
+	 * 
+	 * <p>Monitors the following charts:
+	 * <ul>
+	 *   <li>Today's count chart</li>
+	 *   <li>Deliveries this month chart</li>
+	 *   <li>Deliveries this year chart</li>
+	 *   <li>Yearly sales graph</li>
+	 *   <li>Monthly product split chart</li>
+	 * </ul>
+	 * </p>
+	 */
 	// This method is overridden to measure the page load performance and can be safely removed
 	// if there is no need for that.
 	private void measurePageLoadPerformance() {
@@ -130,6 +229,15 @@ public class DashboardView extends LitTemplate {
 		monthlyProductSplit.addChartLoadListener(chartLoadListener);
 	}
 
+	/**
+	 * Initializes the monthly product split pie chart with delivery data.
+	 * 
+	 * <p>Creates a pie chart showing the distribution of product deliveries
+	 * for the current month. The chart displays products as segments with
+	 * their delivery counts.</p>
+	 * 
+	 * @param productDeliveries map of products to their delivery counts for the month
+	 */
 	private void initProductSplitMonthlyGraph(Map<Product, Integer> productDeliveries) {
 
 		LocalDate today = LocalDate.now();
@@ -148,6 +256,15 @@ public class DashboardView extends LitTemplate {
 		conf.addSeries(deliveriesPerProductSeries);
 	}
 
+	/**
+	 * Populates the order count labels and charts with delivery statistics.
+	 * 
+	 * <p>Updates various counter labels and the today count chart with
+	 * current delivery statistics including counts for today, tomorrow,
+	 * new orders, and unavailable items.</p>
+	 * 
+	 * @param deliveryStats the delivery statistics data to display
+	 */
 	private void populateOrdersCounts(DeliveryStats deliveryStats) {
 		List<OrderSummary> orders = orderService.findAnyMatchingStartingToday();
 
@@ -161,7 +278,15 @@ public class DashboardView extends LitTemplate {
 		tomorrowCount.setOrdersCountData(DashboardUtils.getTomorrowOrdersCountData(deliveryStats, orders.iterator()));
 	}
 
-
+	/**
+	 * Initializes the today's count solid gauge chart with order data.
+	 * 
+	 * <p>Creates a circular gauge chart showing today's order progress
+	 * as a percentage of overall capacity. The chart uses a solid gauge
+	 * style with arc background for visual appeal.</p>
+	 * 
+	 * @param data the order count data containing current count and overall capacity
+	 */
 	private void initTodayCountSolidgaugeChart(OrdersCountDataWithChart data) {
 		Configuration configuration = todayCountChart.getConfiguration();
 		configuration.getChart().setType(ChartType.SOLIDGAUGE);
@@ -194,6 +319,18 @@ public class DashboardView extends LitTemplate {
 		pane.setBackground(background);
 	}
 
+	/**
+	 * Populates the delivery charts with monthly and yearly data.
+	 * 
+	 * <p>Configures and populates two column charts:
+	 * <ul>
+	 *   <li>Yearly deliveries chart showing month-by-month delivery counts</li>
+	 *   <li>Monthly deliveries chart showing day-by-day delivery counts</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param data the dashboard data containing delivery statistics
+	 */
 	private void populateDeliveriesCharts(DashboardData data) {
 		LocalDate today = LocalDate.now();
 

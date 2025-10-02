@@ -29,20 +29,61 @@ import com.vaadin.starter.bakery.backend.data.entity.Product;
 import com.vaadin.starter.bakery.backend.data.entity.User;
 import com.vaadin.starter.bakery.backend.repositories.OrderRepository;
 
+/**
+ * Service class for managing {@link Order} entities and related business operations.
+ * 
+ * <p>This service provides comprehensive order management functionality including:
+ * <ul>
+ *   <li>Order CRUD operations with transaction support</li>
+ *   <li>Advanced filtering and search capabilities</li>
+ *   <li>Dashboard data generation with delivery statistics</li>
+ *   <li>Order history and comment management</li>
+ *   <li>Analytics and reporting features</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The service handles complex business logic for order processing, state management,
+ * and provides data for dashboard visualizations and reports.</p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
+ */
 @Service
 public class OrderService implements CrudService<Order> {
 
+	/**
+	 * Repository for accessing order data.
+	 */
 	private final OrderRepository orderRepository;
 
+	/**
+	 * Constructs a new OrderService with the specified order repository.
+	 * 
+	 * @param orderRepository the repository for managing order entities
+	 */
 	@Autowired
 	public OrderService(OrderRepository orderRepository) {
 		super();
 		this.orderRepository = orderRepository;
 	}
 
+	/**
+	 * Set of order states that indicate an order is not available for delivery.
+	 * Includes all states except DELIVERED, READY, and CANCELLED.
+	 */
 	private static final Set<OrderState> notAvailableStates = Collections.unmodifiableSet(
 			EnumSet.complementOf(EnumSet.of(OrderState.DELIVERED, OrderState.READY, OrderState.CANCELLED)));
 
+	/**
+	 * Saves an order using a custom order filler function.
+	 * Creates a new order if ID is null, otherwise loads and updates an existing order.
+	 * 
+	 * @param currentUser the user performing the operation
+	 * @param id the order ID (null for new orders)
+	 * @param orderFiller function that populates the order with data
+	 * @return the saved order
+	 */
 	@Transactional(rollbackOn = Exception.class)
 	public Order saveOrder(User currentUser, Long id, BiConsumer<User, Order> orderFiller) {
 		Order order;
@@ -55,17 +96,40 @@ public class OrderService implements CrudService<Order> {
 		return orderRepository.save(order);
 	}
 
+	/**
+	 * Saves an order entity to the database.
+	 * 
+	 * @param order the order to save
+	 * @return the saved order
+	 */
 	@Transactional(rollbackOn = Exception.class)
 	public Order saveOrder(Order order) {
 		return orderRepository.save(order);
 	}
 
+	/**
+	 * Adds a comment to an order's history and saves the order.
+	 * 
+	 * @param currentUser the user adding the comment
+	 * @param order the order to add the comment to
+	 * @param comment the comment text
+	 * @return the updated order with the new history item
+	 */
 	@Transactional(rollbackOn = Exception.class)
 	public Order addComment(User currentUser, Order order, String comment) {
 		order.addHistoryItem(currentUser, comment);
 		return orderRepository.save(order);
 	}
 
+	/**
+	 * Finds orders matching the specified criteria with due dates after the filter date.
+	 * Supports optional filtering by customer name and due date.
+	 * 
+	 * @param optionalFilter optional customer name filter
+	 * @param optionalFilterDate optional minimum due date filter
+	 * @param pageable pagination information
+	 * @return a page of orders matching the criteria
+	 */
 	public Page<Order> findAnyMatchingAfterDueDate(Optional<String> optionalFilter,
 			Optional<LocalDate> optionalFilterDate, Pageable pageable) {
 		if (optionalFilter.isPresent() && !optionalFilter.get().isEmpty()) {
@@ -84,6 +148,11 @@ public class OrderService implements CrudService<Order> {
 		}
 	}
 	
+	/**
+	 * Finds order summaries for orders starting from today.
+	 * 
+	 * @return list of order summaries with due dates from today onward
+	 */
 	@Transactional
 	public List<OrderSummary> findAnyMatchingStartingToday() {
 		return orderRepository.findByDueDateGreaterThanEqual(LocalDate.now());
@@ -116,6 +185,13 @@ public class OrderService implements CrudService<Order> {
 		return stats;
 	}
 
+	/**
+	 * Generates comprehensive dashboard data including delivery statistics and analytics.
+	 * 
+	 * @param month the month for which to generate data
+	 * @param year the year for which to generate data
+	 * @return dashboard data containing delivery stats, monthly/daily breakdowns, and product analytics
+	 */
 	public DashboardData getDashboardData(int month, int year) {
 		DashboardData data = new DashboardData();
 		data.setDeliveryStats(getDeliveryStats());
