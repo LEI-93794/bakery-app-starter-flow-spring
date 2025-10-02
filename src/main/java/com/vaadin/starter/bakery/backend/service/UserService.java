@@ -12,6 +12,7 @@ import com.vaadin.starter.bakery.backend.data.entity.User;
 import com.vaadin.starter.bakery.backend.repositories.UserRepository;
 
 /**
+ * Test conflict.
  * Serviço de aplicação para gerir a CRUD (Criar, Ler, Atualizar, Apagar) de 
  * entidades de Utilizador (User).
  * <p>
