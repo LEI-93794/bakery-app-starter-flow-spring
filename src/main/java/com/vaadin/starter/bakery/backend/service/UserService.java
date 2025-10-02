@@ -12,25 +12,40 @@ import com.vaadin.starter.bakery.backend.data.entity.User;
 import com.vaadin.starter.bakery.backend.repositories.UserRepository;
 
 /**
- * Test conflict.
- * Serviço de aplicação para gerir a CRUD (Criar, Ler, Atualizar, Apagar) de 
- * entidades de Utilizador (User).
- * <p>
- * Implementa validações específicas de negócio, como a prevenção de modificação
- * de utilizadores bloqueados ou a auto-exclusão.
+ * Service class for managing CRUD (Create, Read, Update, Delete) operations on User entities.
+ * 
+ * <p>This service implements specific business validations such as preventing modification
+ * of locked users and self-deletion protection.</p>
+ * 
+ * <p>The service provides comprehensive user management functionality including:
+ * <ul>
+ *   <li>Multi-field search across user properties (email, names, role)</li>
+ *   <li>User account security validations</li>
+ *   <li>Prevention of unauthorized operations</li>
+ *   <li>Pagination and filtering support</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
  */
 @Service
 public class UserService implements FilterableCrudService<User> {
 
-	/** Mensagens de erro. */
+	/** Error messages for user operations. */
 	public static final String MODIFY_LOCKED_USER_NOT_PERMITTED = "User has been locked and cannot be modified or deleted";
 	private static final String DELETING_SELF_NOT_PERMITTED = "You cannot delete your own account";
 	
+	/**
+	 * Repository for accessing user data.
+	 */
 	private final UserRepository userRepository;
 
 	/**
-	 * Construtor injetado por dependência.
-	 * * @param userRepository o repositório JPA para aceder aos dados do utilizador.
+	 * Constructs a new UserService with the specified user repository.
+	 * 
+	 * @param userRepository the JPA repository for accessing user data
 	 */
 	@Autowired
 	public UserService(UserRepository userRepository) {
@@ -38,12 +53,12 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	/**
-	 * Encontra uma página de utilizadores cujos campos (e-mail, nome, apelido ou role)
-	 * correspondam ao filtro fornecido (sem distinção entre maiúsculas e minúsculas).
+	 * Finds a page of users whose fields (email, first name, last name, or role)
+	 * match the provided filter (case-insensitive search).
 	 *
-	 * @param filter O valor opcional a ser usado como filtro de pesquisa.
-	 * @param pageable A informação de paginação (número da página, tamanho e ordenação).
-	 * @return Uma {@code Page} de entidades {@code User} correspondentes.
+	 * @param filter optional value to be used as search filter
+	 * @param pageable pagination information (page number, size, and sorting)
+	 * @return a {@code Page} of matching {@code User} entities
 	 */	
 	public Page<User> findAnyMatching(Optional<String> filter, Pageable pageable) {
 		if (filter.isPresent()) {
@@ -57,11 +72,11 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	/**
-	 * Conta o número total de utilizadores cujos campos (e-mail, nome, apelido ou role)
-	 * correspondam ao filtro fornecido.
+	 * Counts the total number of users whose fields (email, first name, last name, or role)
+	 * match the provided filter.
 	 *
-	 * @param filter O valor opcional a ser usado como filtro de pesquisa.
-	 * @return O número total de utilizadores correspondentes.
+	 * @param filter optional value to be used as search filter
+	 * @return the total number of matching users
 	 */	
 	@Override
 	public long countAnyMatching(Optional<String> filter) {
@@ -79,18 +94,24 @@ public class UserService implements FilterableCrudService<User> {
 		return userRepository;
 	}
 
+	/**
+	 * Retrieves all users with pagination support.
+	 * 
+	 * @param pageable pagination information
+	 * @return a page of users
+	 */
 	public Page<User> find(Pageable pageable) {
 		return getRepository().findBy(pageable);
 	}
 
 	/**
-	 * Guarda a entidade {@code User} fornecida.
-	 * Lança uma exceção se o utilizador estiver bloqueado (locked).
+	 * Saves the provided {@code User} entity.
+	 * Throws an exception if the user is locked.
 	 *
-	 * @param currentUser O utilizador que está a efetuar a operação (para validações de segurança).
-	 * @param entity O utilizador a ser guardado ou atualizado.
-	 * @return O utilizador guardado.
-	 * @throws com.vaadin.starter.bakery.backend.data.UserFriendlyDataException se o utilizador estiver bloqueado.
+	 * @param currentUser the user performing the operation (for security validations)
+	 * @param entity the user to be saved or updated
+	 * @return the saved user
+	 * @throws UserFriendlyDataException if the user is locked
 	 */	
 	@Override
 	public User save(User currentUser, User entity) {
@@ -99,13 +120,13 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	/**
-	 * Apaga o utilizador especificado.
-	 * Lança uma exceção se o utilizador a apagar for o utilizador atual ou se o utilizador
-	 * a apagar estiver bloqueado.
+	 * Deletes the specified user.
+	 * Throws an exception if the user to delete is the current user or if the user
+	 * to delete is locked.
 	 *
-	 * @param currentUser O utilizador que está a efetuar a operação (admin, etc.).
-	 * @param userToDelete O utilizador que se pretende apagar.
-	 * @throws com.vaadin.starter.bakery.backend.data.UserFriendlyDataException se for auto-exclusão ou se o utilizador estiver bloqueado.
+	 * @param currentUser the user performing the operation (admin, etc.)
+	 * @param userToDelete the user to be deleted
+	 * @throws UserFriendlyDataException if attempting self-deletion or if the user is locked
 	 */	
 	@Override
 	@Transactional
@@ -116,11 +137,11 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	/**
-	 * Verifica se o utilizador atual está a tentar apagar a sua própria conta.
+	 * Checks if the current user is attempting to delete their own account.
 	 *
-	 * @param currentUser O utilizador que está a fazer o pedido.
-	 * @param user O utilizador alvo da operação de eliminação.
-	 * @throws com.vaadin.starter.bakery.backend.data.UserFriendlyDataException se os dois utilizadores forem os mesmos.
+	 * @param currentUser the user making the request
+	 * @param user the target user for the deletion operation
+	 * @throws UserFriendlyDataException if both users are the same
 	 */	
 	private void throwIfDeletingSelf(User currentUser, User user) {
 		if (currentUser.equals(user)) {
@@ -129,10 +150,10 @@ public class UserService implements FilterableCrudService<User> {
 	}
 
 	/**
-	 * Verifica se a entidade {@code User} fornecida está marcada como bloqueada.
+	 * Checks if the provided {@code User} entity is marked as locked.
 	 *
-	 * @param entity O utilizador alvo da operação de modificação.
-	 * @throws com.vaadin.starter.bakery.backend.data.UserFriendlyDataException se o utilizador estiver bloqueado.
+	 * @param entity the target user for the modification operation
+	 * @throws UserFriendlyDataException if the user is locked
 	 */	
 	private void throwIfUserLocked(User entity) {
 		if (entity != null && entity.isLocked()) {
@@ -140,6 +161,12 @@ public class UserService implements FilterableCrudService<User> {
 		}
 	}
 
+	/**
+	 * Creates a new user instance.
+	 * 
+	 * @param currentUser the user creating the new entity
+	 * @return a new user instance
+	 */
 	@Override
 	public User createNew(User currentUser) {
 		return new User();

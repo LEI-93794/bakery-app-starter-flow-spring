@@ -42,15 +42,66 @@ import com.vaadin.starter.bakery.ui.views.storefront.StorefrontView;
 
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Main application layout component that provides the overall structure and navigation for the bakery application.
+ * 
+ * <p>This layout serves as the root container for all application views and provides:
+ * <ul>
+ *   <li>Application header with branding and user information</li>
+ *   <li>Navigation menu with role-based access control</li>
+ *   <li>Drawer-based responsive navigation for mobile devices</li>
+ *   <li>Global confirmation dialog functionality</li>
+ *   <li>Logout capabilities with authentication integration</li>
+ *   <li>Development mode indicators and system information</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The layout extends Vaadin's {@link AppLayout} to provide a standard application shell
+ * with responsive behavior across different screen sizes. The navigation menu is dynamically
+ * generated based on available views and user permissions.</p>
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li>Security-aware navigation - menu items are filtered based on user roles</li>
+ *   <li>Internationalization support with translatable content</li>
+ *   <li>Development mode detection with environment indicators</li>
+ *   <li>Global confirmation dialog for destructive operations</li>
+ *   <li>Responsive design with drawer navigation for mobile</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
+ */
 public class MainView extends AppLayout {
 
+	/**
+	 * Access annotation checker for role-based navigation filtering.
+	 */
 	@Autowired
 	private AccessAnnotationChecker accessChecker;
+	
+	/**
+	 * Authentication context for user management and logout functionality.
+	 */
 	@Autowired
 	private AuthenticationContext authenticationContext;
+	
+	/**
+	 * Global confirmation dialog for application-wide confirmations.
+	 */
 	private final ConfirmDialog confirmDialog = new ConfirmDialog();
+	
+	/**
+	 * Main navigation menu tabs component.
+	 */
 	private Tabs menu;
 
+	/**
+	 * Initializes the main layout after dependency injection.
+	 * Sets up the application header, navigation menu, and global components.
+	 */
 	@PostConstruct
 	public void init() {
 		confirmDialog.setCancelable(true);

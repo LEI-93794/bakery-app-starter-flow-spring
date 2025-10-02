@@ -16,19 +16,62 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.dom.DebouncePhase;
 
+/**
+ * Custom search bar component for filtering data in the bakery application.
+ * 
+ * <p>This component provides a comprehensive search interface with:
+ * <ul>
+ *   <li>Text input field with eager value change mode for instant feedback</li>
+ *   <li>Clear button for resetting the search</li>
+ *   <li>Action button for additional search operations</li>
+ *   <li>Checkbox functionality for advanced filtering options</li>
+ *   <li>Event-driven architecture with custom events for filter changes</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The component is implemented as a LitTemplate with a corresponding
+ * JavaScript template for enhanced performance and user experience.</p>
+ * 
+ * <p>Events fired by this component:
+ * <ul>
+ *   <li>{@code FilterChanged} - When search criteria change</li>
+ *   <li>{@code SearchValueChanged} - When text input value changes</li>
+ * </ul>
+ * </p>
+ * 
+ * @author Bakery Application
+ * @version 1.0
+ * @since 1.0
+ */
 @Tag("search-bar")
 @JsModule("./src/components/search-bar.js")
 public class SearchBar extends LitTemplate {
 
+	/**
+	 * Text input field for search queries.
+	 * Mapped to the "field" element in the template.
+	 */
 	@Id("field")
 	private TextField textField;
 
+	/**
+	 * Button for clearing the search input.
+	 * Mapped to the "clear" element in the template.
+	 */
 	@Id("clear")
 	private Button clearButton;
 
+	/**
+	 * Action button for additional search operations.
+	 * Mapped to the "action" element in the template.
+	 */
 	@Id("action")
 	private Button actionButton;
 
+	/**
+	 * Constructs a new SearchBar component with default behavior.
+	 * Sets up event listeners and value change modes for responsive searching.
+	 */
 	public SearchBar() {
 		textField.setValueChangeMode(ValueChangeMode.EAGER);
 
