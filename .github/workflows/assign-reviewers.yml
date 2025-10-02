@@ -16,6 +16,6 @@ jobs:
         run: |
           gh api \
             repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers \
-            -f reviewers='["LEI-93794"]'
+            --raw-field reviewers='["LEI-93794"]'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
