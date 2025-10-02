@@ -1,0 +1,19 @@
+name: Notify Pull Request Reviewers
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  assign_reviewer:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign Reviewers
+        uses: actions/request-review@v1
+        with:
+          reviewers: LEI-93794
