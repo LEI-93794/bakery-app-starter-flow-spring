@@ -8,14 +8,15 @@ permissions:
   pull-requests: write
 
 jobs:
-  assign_reviewer:
+  assign_reviewers:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Assign Reviewers
         run: |
-          gh api \
+          echo '{"reviewers": ["LEI-93794"]}' | gh api \
             repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers \
-            --raw-field reviewers='["LEI-93794"]'
+            --input -
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
