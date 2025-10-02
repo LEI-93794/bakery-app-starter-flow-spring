@@ -1,19 +1,18 @@
-name: Notify Pull Request Reviewers
+name: Assign Reviewers
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, ready_for_review]
 
 permissions:
   pull-requests: write
-  contents: read
 
 jobs:
-  assign_reviewer:
+  assign_reviewers:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - name: Assign Reviewers
-        uses: necojackarc/assign-pr-reviewers@v1
+      - name: Assign reviewers
+        uses: hkusu/review-assign-action@v1.4.0
         with:
           reviewers: LEI-93794
