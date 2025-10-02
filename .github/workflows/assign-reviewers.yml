@@ -8,11 +8,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  assign_reviewers:
+  assign_reviewer:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
-      - name: Assign reviewers
-        uses: hkusu/review-assign-action@v1.4.0
-        with:
-          reviewers: LEI-93794
+      - name: Assign Reviewers
+        run: |
+          gh api \
+            repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested_reviewers \
+            -f reviewers='["LEI-93794"]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
