@@ -1,4 +1,4 @@
-# ISCTE - Engenharia de Software 2024/2025
+# ISCTE - Engenharia de Software 2025/2026
 
 | Categoria | Detalhe |
 | :--- | :--- |
