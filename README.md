@@ -1,10 +1,10 @@
 # ISCTE - Engenharia de Software 2025/2026
 
-| Categoria | Detalhe |
-| :--- | :--- |
-| **Grupo (nickname)** | montezdesousa |
-| **Curso** | Engenharia Informática (PL) |
-| **Membro(s)** | Diogo Sousa (93794) |
+| Curso  | Nº Aluno | Nome              |
+|--------|----------|-------------------|
+| LEI-PL    | 93794    | Diogo Sousa       |
+| LETI    | 122651    | Pedro Henriques      |
+| LETI    | 122656    | Miguel Aguiar    |
 
 # ⚠️ This starter is not recommended ⚠️
 
